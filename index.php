@@ -1,84 +1,97 @@
+<?php
+include('connect.php');
+?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register & Login</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
 </head>
 
 <body>
-    <div class="container" id="signup" style="display:none;">
-        <h1 class="form-title">Register</h1>
-        <form method="post" action="register.php">
-            <div class="input-group">
-                <i class="fas fa-user"></i>
-                <input type="text" name="fName" id="fName" placeholder="First Name" required>
-                <label for="fname">First Name</label>
-            </div>
-            <div class="input-group">
-                <i class="fas fa-user"></i>
-                <input type="text" name="lName" id="lName" placeholder="Last Name" required>
-                <label for="lName">Last Name</label>
-            </div>
-            <div class="input-group">
-                <i class="fas fa-envelope"></i>
-                <input type="email" name="email" id="email" placeholder="Email" required>
-                <label for="email">Email</label>
-            </div>
-            <div class="input-group">
-                <i class="fas fa-lock"></i>
-                <input type="password" name="password" id="password" placeholder="Password" required>
-                <label for="password">Password</label>
-            </div>
-            <input type="submit" class="btn" value="Sign Up" name="signUp">
-        </form>
-        <p class="or">
-            ----------or--------
-        </p>
-        <div class="icons">
-            <i class="fab fa-google"></i>
-            <i class="fab fa-facebook"></i>
-        </div>
-        <div class="links">
-            <p>Already Have Account ?</p>
-            <button id="signInButton">Sign In</button>
-        </div>
-    </div>
-
-    <div class="container" id="signIn">
-        <h1 class="form-title">Sign In</h1>
-        <form method="post" action="register.php">
-            <div class="input-group">
-                <i class="fas fa-envelope"></i>
-                <input type="email" name="email" id="email" placeholder="Email" required>
-                <label for="email">Email</label>
-            </div>
-            <div class="input-group">
-                <i class="fas fa-lock"></i>
-                <input type="password" name="password" id="password" placeholder="Password" required>
-                <label for="password">Password</label>
-            </div>
-            <p class="recover">
-                <a href="#">Recover Password</a>
-            </p>
-            <input type="submit" class="btn" value="Sign In" name="signIn">
-        </form>
-        <p class="or">
-            ----------or--------
-        </p>
-        <div class="icons">
-            <i class="fab fa-google"></i>
-            <i class="fab fa-facebook"></i>
-        </div>
-        <div class="links">
-            <p>Don't have account yet?</p>
-            <button id="signUpButton">Sign Up</button>
-        </div>
-    </div>
-    <script src="script.js"></script>
+    <form action="index.php" method="post">
+        <h2>Register</h2>
+        <label for="">First Name:</label> <br>
+        <input type="text" name="firstName"><br>
+        <label for="">Last Name:</label><br>
+        <input type="text" name="lastName"><br>
+        <label for="">Email:</label><br>
+        <input type="text" name="email"><br>
+        <label for="">Password:</label><br>
+        <input type="password" name="password"><br> <br>
+        <input type="submit" name="Registersubmit" value="Register">
+    </form>
+    <hr>
+    <form action="index.php" method="post">
+        <h2>Login</h2>
+        <label for="">Email</label> <br>
+        <input type="text" name="loginemail"><br>
+        <label for="">Password</label> <br>
+        <input type="password" name="loginPassword"><br> <br>
+        <input type="submit" name="Loginsubmit" value="Login">
+    </form>
 </body>
 
 </html>
+<?php
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+
+    if (isset($_POST["Loginsubmit"])) {
+        $email = filter_input(INPUT_POST, "loginemail", FILTER_SANITIZE_EMAIL);
+        $password = filter_input(INPUT_POST, "loginPassword", FILTER_SANITIZE_SPECIAL_CHARS);
+
+        if (empty($email)) {
+            echo "Enter email";
+        } elseif (empty($password)) {
+            echo "Password needed";
+        } else {
+            $sql = "SELECT * FROM users WHERE email = '$email'";
+            $result = mysqli_query($conn, $sql);
+
+            if ($row = mysqli_fetch_assoc($result)) {
+                echo "Entered password: '" . $password . "'<br>";
+                echo "Stored password: '" . $row['password'] . "'<br>";
+
+                // Compare plain text passwords
+                if ($password == $row['password']) {
+                    echo "Login successful! Welcome, " . $row['firstName'] . " " . $row['lastName'] . ".";
+                } else {
+                    echo "Invalid password. Please try again.";
+                }
+            } else {
+                echo "No user found with this email.";
+            }
+        }
+    }
+
+
+    if (isset($_POST["Registersubmit"])) {
+        $firstName = filter_input(INPUT_POST, "firstName", FILTER_SANITIZE_SPECIAL_CHARS);
+        $lastName = filter_input(INPUT_POST, "lastName", FILTER_SANITIZE_SPECIAL_CHARS);
+        $email = filter_input(INPUT_POST, "email", FILTER_SANITIZE_EMAIL);
+        $password = filter_input(INPUT_POST, "password", FILTER_SANITIZE_SPECIAL_CHARS);
+
+        if (empty($firstName)) {
+            echo "Please enter name";
+        } elseif (empty($lastName)) {
+            echo "Please enter lastname";
+        } elseif (empty($email)) {
+            echo "Please enter email";
+        } elseif (empty($password)) {
+            echo "Please enter password";
+        } else {
+            // Store password as plain text (not secure, for testing only)
+            $sql = "INSERT INTO users (firstName, lastName, email, password) 
+                    VALUES('$firstName','$lastName','$email','$password')";
+
+            mysqli_query($conn, $sql);
+            echo "Registered successfully";
+        }
+    }
+}
+
+mysqli_close($conn);
+?>

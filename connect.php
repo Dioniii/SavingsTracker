@@ -1,16 +1,17 @@
 <?php
 
-$host = "localhost";
-$user = "root";
-$pass = "";
-$db = "savingstracker";
+$db_server = "localhost";
 
-// Create a connection
-$conn = new mysqli($host, $user, $pass, $db);
+$db_user = "root";
 
-// Check the connection
-if ($conn->connect_error) {
-    die("Failed to connect to DB: " . $conn->connect_error);
+$db_pass = "";
+
+$db_name = "savingstracker";
+
+$conn = "";
+try {
+    $conn = mysqli_connect($db_server, $db_user, $db_pass, $db_name);
+} catch (mysqli_sql_exception) {
+
+    echo "Could not connect";
 }
-
-// Connection is successful; no need to output anything.
