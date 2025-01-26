@@ -1,78 +1,42 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
 body {
     margin: 0;
     padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
+    font-family: 'Inter', sans-serif; /* Use Inter as the main font */
+    font-size: 16px; /* Optional: Set a base font size */
+}
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
 }
 
-.signup-box {
-    background-color: #ffffff;
-    padding: 20px 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+li {
+    float: left;
+}
+
+li a {
+    
+    display: block;
+    color: white;
     text-align: center;
-    width: 300px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.signup-box h2 {
-    margin-bottom: 20px;
-    font-size: 24px;
-    color: #333333;
-}
-
-.signup-box input {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #cccccc;
-    border-radius: 5px;
-    font-size: 16px;
-}
-
-.signup-box input:focus {
-    border-color: #007bff;
-    outline: none;
-}
-
-.signup-box button {
-    width: 100%;
-    padding: 10px;
-    background-color: #007bff;
-    color: #ffffff;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-}
-
-.signup-box button:hover {
-    background-color: #0056b3;
-}
-
-.signup-box .register-link {
-    margin-top: 15px;
-    font-size: 14px;
-    color: #555555;
-}
-
-.signup-box .register-link a {
-    color: #007bff;
+    padding: 14px 16px;
     text-decoration: none;
 }
 
-.signup-box .register-link a:hover {
-    text-decoration: underline;
+.logout{
+    
+    all: unset;
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    background-color: none;
+}
+
+.logout:hover {
+    cursor: pointer;
+    background-color: #d26617;
 }
