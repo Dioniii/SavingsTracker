@@ -7,7 +7,7 @@ include('connect.php');
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Savings Tracker</title>
 </head>
 
 <body>
@@ -24,6 +24,8 @@ include('connect.php');
         <input type="submit" name="Registersubmit" value="Register">
     </form>
     <hr>
+
+
     <form action="index.php" method="post">
         <h2>Login</h2>
         <label for="">Email</label> <br>
@@ -32,10 +34,12 @@ include('connect.php');
         <input type="password" name="loginPassword"><br> <br>
         <input type="submit" name="Loginsubmit" value="Login">
     </form>
+
 </body>
 
 </html>
 <?php
+session_start();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
@@ -52,12 +56,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $result = mysqli_query($conn, $sql);
 
             if ($row = mysqli_fetch_assoc($result)) {
-                echo "Entered password: '" . $password . "'<br>";
-                echo "Stored password: '" . $row['password'] . "'<br>";
 
-                // Compare plain text passwords
                 if ($password == $row['password']) {
-                    echo "Login successful! Welcome, " . $row['firstName'] . " " . $row['lastName'] . ".";
+
+                    echo "Debug: Login successful. First Name: " . $row['firstName'];
+                    $_SESSION['firstName'] = $row['firstName'];
+                    $_SESSION['lastName'] = $row['lastName'];
+                    $_SESSION['loginemail'] = $row['email'];
+                    header('Location: main.php');
+                    exit();
                 } else {
                     echo "Invalid password. Please try again.";
                 }
