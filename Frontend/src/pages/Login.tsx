@@ -32,35 +32,77 @@ const Login = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const createAccount = async (name: string, balance: number) => {
+    const token = localStorage.getItem('jwt_token');
+
+    const response = await fetch('http://localhost:4000/create-account', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,  // Send JWT token in header
+        },
+        body: JSON.stringify({ name, balance }),
+    });
+
+    const data = await response.json();
     
-    if (!validateForm()) return;
-    
-    setIsLoading(true);
-    
-    try {
-      // This is where you would connect to your backend
-      // For now, we'll simulate a successful login
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      toast({
-        title: "Success!",
-        description: "You have successfully logged in.",
+    // Handle response accordingly
+};
+
+
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+
+  if (!validateForm()) return;
+
+  setIsLoading(true);
+
+  try {
+      // Send login request to the backend
+      const response = await fetch('http://localhost:4000/login', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+              email: email,
+              password: password,
+          }),
       });
-      
-      // Redirect to dashboard after successful login
-      navigate("/dashboard");
-    } catch (error) {
+
+      const data = await response.json();
+
+      // If login is successful, save the JWT token
+      if (response.ok) {
+          // Save JWT token to localStorage (or cookies)
+          localStorage.setItem('jwt_token', data.token);
+
+          toast({
+              title: "Success!",
+              description: "You have successfully logged in.",
+          });
+
+          // Redirect to dashboard after successful login
+          navigate("/dashboard");
+      } else {
+          // Show error if login fails
+          toast({
+              title: "Error",
+              description: data.message || "Failed to login. Please try again.",
+              variant: "destructive",
+          });
+      }
+  } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to login. Please try again.",
-        variant: "destructive",
+          title: "Error",
+          description: "Something went wrong. Please try again later.",
+          variant: "destructive",
       });
-    } finally {
+  } finally {
       setIsLoading(false);
-    }
-  };
+  }
+};
+
 
   return (
     <Layout>

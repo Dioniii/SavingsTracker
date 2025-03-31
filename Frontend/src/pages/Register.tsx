@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Layout from "../components/Layout";
@@ -6,6 +5,7 @@ import { useToast } from "../components/ui/use-toast";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
+import axios from "axios";  // Import axios
 
 const Register = () => {
   const [name, setName] = useState("");
@@ -47,17 +47,28 @@ const Register = () => {
     setIsLoading(true);
     
     try {
-      // This is where you would connect to your backend
-      // For now, we'll simulate a successful registration
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      toast({
-        title: "Account created!",
-        description: "You have successfully created an account.",
+      // Send POST request to backend for account creation
+      const response = await axios.post("http://localhost:4000/register", {
+        name,
+        email,
+        password,
       });
-      
-      // Redirect to login after successful registration
-      navigate("/");
+
+      if (response.data.success) {
+        toast({
+          title: "Account created!",
+          description: "You have successfully created an account.",
+        });
+
+        // Redirect to login after successful registration
+        navigate("/");
+      } else {
+        toast({
+          title: "Error",
+          description: response.data.message,
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       toast({
         title: "Error",
