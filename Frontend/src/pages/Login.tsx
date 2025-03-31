@@ -6,6 +6,7 @@ import { useToast } from "../components/ui/use-toast";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
+import axios from "axios";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -32,81 +33,53 @@ const Login = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const createAccount = async (name: string, balance: number) => {
-    const token = localStorage.getItem('jwt_token');
-
-    const response = await fetch('http://localhost:4000/create-account', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,  // Send JWT token in header
-        },
-        body: JSON.stringify({ name, balance }),
-    });
-
-    const data = await response.json();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     
-    // Handle response accordingly
-};
-
-
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-
-  if (!validateForm()) return;
-
-  setIsLoading(true);
-
-  try {
-      // Send login request to the backend
-      const response = await fetch('http://localhost:4000/login', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-              email: email,
-              password: password,
-          }),
+    if (!validateForm()) return;
+    
+    setIsLoading(true);
+    
+    try {
+      // Send login request to backend
+      const response = await axios.post("http://localhost:4000/login", {
+        email,
+        password,
       });
 
-      const data = await response.json();
+      if (response.data.success) {
+        // Save token to localStorage
+        localStorage.setItem("token", response.data.token);
+        
+        toast({
+          title: "Success",
+          description: "You have successfully logged in.",
+        });
 
-      // If login is successful, save the JWT token
-      if (response.ok) {
-          // Save JWT token to localStorage (or cookies)
-          localStorage.setItem('jwt_token', data.token);
-
-          toast({
-              title: "Success!",
-              description: "You have successfully logged in.",
-          });
-
-          // Redirect to dashboard after successful login
-          navigate("/dashboard");
+        // Redirect to dashboard
+        navigate("/dashboard");
       } else {
-          // Show error if login fails
-          toast({
-              title: "Error",
-              description: data.message || "Failed to login. Please try again.",
-              variant: "destructive",
-          });
-      }
-  } catch (error) {
-      toast({
+        toast({
           title: "Error",
-          description: "Something went wrong. Please try again later.",
+          description: response.data.message || "Login failed. Please try again.",
           variant: "destructive",
+        });
+      }
+    } catch (error: any) {
+      console.error("Login error:", error);
+      toast({
+        title: "Login Failed",
+        description: error.response?.data?.message || "An error occurred. Please try again.",
+        variant: "destructive",
       });
-  } finally {
+    } finally {
       setIsLoading(false);
-  }
-};
-
+    }
+  };
 
   return (
     <Layout>
-      <h1 className="text-2xl font-bold mb-6 text-center">Log In</h1>
+      <h1 className="text-2xl font-bold mb-6 text-center">Login to Your Account</h1>
       
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
@@ -128,6 +101,9 @@ const handleSubmit = async (e: React.FormEvent) => {
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <Label htmlFor="password" className="finance-form-label">Password</Label>
+            <Link to="/forgot-password" className="finance-link text-xs">
+              Forgot password?
+            </Link>
           </div>
           <Input
             id="password"
@@ -158,7 +134,7 @@ const handleSubmit = async (e: React.FormEvent) => {
         <p className="text-center text-sm">
           Don't have an account?{" "}
           <Link to="/register" className="finance-link font-medium">
-            Create an account
+            Sign up
           </Link>
         </p>
       </form>

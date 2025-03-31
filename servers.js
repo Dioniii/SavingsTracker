@@ -123,3 +123,31 @@ app.post("/create-account", authenticateToken, async (req, res) => {
         });
     }
 });
+
+// Get all Accounts 
+app.get("/accounts", authenticateToken, async (req, res) => {
+    try {
+        const userId = req.user.id; // Get the logged-in user's ID from the token
+
+        // Fetch accounts for the current user
+        const pool = await poolPromise;
+        const result = await pool.request()
+            .input("userId", sql.Int, userId)
+            .query(`
+                SELECT AccountID AS id, account_name, balance 
+                FROM accounts 
+                WHERE user_id = @userId
+                ORDER BY AccountID DESC
+            `);
+
+        res.status(200).json({
+            success: true,
+            accounts: result.recordset
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+});
