@@ -124,6 +124,35 @@ app.post("/create-account", authenticateToken, async (req, res) => {
     }
 });
 
+// Delete Account
+
+app.delete("/delete/:id" , async(req,res) => {
+    try{
+
+        const {id} = req.params;
+
+        if(isNaN(id)){
+            return res.status(400).json({
+                succcess:false,
+                message: "InvalidId"
+            })
+        }
+
+        const pool = await poolPromise;
+        const result = await pool.request().input(
+            "AccountID" , sql.Int, id
+        ).query("DELETE FROM accounts WHERE AccountID = @AccountID");
+        console.log(result);
+        res.status(200).json(result.rowsAffected);
+    }
+    catch(error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+})
+
 // Get all Accounts 
 app.get("/accounts", authenticateToken, async (req, res) => {
     try {
